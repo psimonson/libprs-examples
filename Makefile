@@ -1,5 +1,6 @@
 CC=gcc
-CFLAGS=-std=c89 -Wall -Wextra -g $(shell pkg-config --cflags prs)
+CFLAGS=-std=c89 -Wall -Wextra -Wno-unused-parameter -g
+CFLAGS+=$(shell pkg-config --cflags prs)
 LDFLAGS=$(shell pkg-config --libs prs)
 
 SOURCES=$(wildcard *.c)
