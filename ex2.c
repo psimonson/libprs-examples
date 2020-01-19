@@ -12,32 +12,31 @@
 #include <stdlib.h>
 #include "ustack.h"
 
-/* Free data for stack.
- */
-void free_data(void *data)
-{
-	free(data);
-}
 /* Program for showing usage of ustack.
  */
 int main()
 {
 	ustack_t *stack;
-	int *tmp, i;
+	int i;
 
-	stack = init_stack();
+	stack = create_ustack();
 	if(stack == NULL) return 1;
 	for(i = 0; i < 10; i++) {
 		int *a = (int*)malloc(sizeof(int));
 		if(a == NULL) continue;
 		*a = i;
-		push_stack(stack, a);
+		if(push_ustack(stack, i, a) == 0)
+			continue;
+		printf("Push element %d to stack.\n", i);
 	}
-	while(peek_stack(stack) != NULL) {
-		tmp = (int*)pop_stack(stack);
-		printf("%d%s", *tmp, (tmp != NULL ? " " : "\n"));
+	while(peek_ustack(stack) != NULL) {
+		ustack_data_t *tmp = pop_ustack(stack);
+		if(tmp != NULL) {
+			printf("Data ID [%u]: %d\n",
+				get_id_ustack(tmp),
+				*(int*)get_data_ustack(tmp));
+		}
 	}
-	free_stack(stack, free_data);
-	putchar('\n');
+	destroy_ustack(&stack, NULL);
 	return 0;
 }
