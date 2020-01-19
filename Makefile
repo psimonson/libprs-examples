@@ -11,7 +11,7 @@ TARGETS=$(SOURCES:%.c=%)
 all: $(TARGETS)
 
 %.c.o: %.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 %: %.c.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
