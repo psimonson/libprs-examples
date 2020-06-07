@@ -75,7 +75,7 @@ int main()
 	if(server_socket(&server, "8000"))
 		return 1;
 	set_server_socket(server);
-	poll_multiple_socket(server, on_connect, handle_client);
+	poll_multiple_socket(server, on_connect, handle_client, NULL);
 	socket_shutdown();
 	return 0;
 }

@@ -1,0 +1,87 @@
+CC=i686-w64-mingw32-gcc
+AR=i686-w64-mingw32-ar
+SRCDIR=$(shell pwd)
+CFLAGS=-std=c89 -Wall -Wextra -Wno-unused-parameter -g -I./include -I./libprs/include
+LDFLAGS=
+LIBS+=-lkernel32 -luser32 -lws2_32
+
+DESTDIR=
+PREFIX=/usr/local
+
+TARGET=./libprs/build/prs_static.a
+
+EXAMPLES=ex1.exe ex2.exe ex3.exe \
+	ex4.exe ex5.exe ex6.exe ex7.exe ex8.exe \
+	ex9.exe ex10.exe ex11.exe
+
+.PHONY: all install uninstall clean
+all: $(TARGET) $(EXAMPLES)
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -c -o $@ $<
+
+libprs:
+ifeq ($(OS),Windows_NT)
+	git clone https://github.com/psimonson/libprs.git
+	cd libprs; cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=../install \
+-DCMAKE_TOOLCHAIN_FILE=mingw_w64.cmake
+else
+	git clone https://github.com/psimonson/libprs.git
+	cd libprs; cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=../install \
+-DCMAKE_TOOLCHAIN_FILE=mingw_w64.cmake
+endif
+
+$(TARGET): libprs
+	cd libprs; cmake --build build --target all
+
+ex1.exe: ex1.o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ex2.exe: ex2.o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ex3.exe: ex3.o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ex4.exe: ex4.o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ex5.exe: ex5.o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ex6.exe: ex6.o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ex7.exe: ex7.o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ex8.exe: ex8.o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ex9.exe: ex9.o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ex10.exe: ex10.o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+ex11.exe: ex11.o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+install: $(TARGET)
+	md $(DESTDIR)\$(PREFIX)\include\sockhelp
+	copy include\* $(DESTDIR)\$(PREFIX)\include\sockhelp
+	md $(DESTDIR)\$(PREFIX)\lib
+	copy $(TARGET) $(DESTDIR)\$(PREFIX)\lib
+
+uninstall: clean
+	rd /s /q $(DESTDIR)\$(PREFIX)\include\sockhelp
+	rd /s /q $(DESTDIR)\$(PREFIX)\lib\$(TARGET)
+
+clean:
+ifeq ($(OS),Windows_NT)
+	del *.o *.log $(TARGET) $(EXAMPLES)
+	rd /s /q install libprs
+else
+	rm -f *.o *.log $(TARGET) $(EXAMPLES)
+	rm -rf install libprs
+endif

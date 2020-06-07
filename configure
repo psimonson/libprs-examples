@@ -1,0 +1,27 @@
+#!/bin/sh
+
+copy()
+{
+	str="$1"
+	make=$(find . -iname 'Makefile')
+	if [ -f "$make" ]; then
+		rm "$make"
+	fi
+
+	if [ "$str" = "linux" ]; then
+		cp -v "Makefile.linux" "Makefile"
+		if [ ! "$2" = "" ]; then
+			sed -i "s/DESTDIR=/DESTDIR=\$2/" Makefile
+		fi
+	elif [ "$str" = "win32" ]; then
+		cp -v "Makefile.win32" "Makefile"
+		if [ ! "$2" = "" ]; then
+			sed -i "s/DESTDIR=/DESTDIR=\$2/" Makefile
+		fi
+	else
+		echo -e "System not available.\nUsage: $0 <linux|win32> [DESTDIR]"
+		exit 1
+	fi
+}
+
+copy "$1" "$2"
